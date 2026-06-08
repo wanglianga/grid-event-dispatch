@@ -11,7 +11,13 @@ import {
   Max,
   IsBoolean,
 } from 'class-validator';
-import { EventType, UrgencyLevel, ReturnReason } from '../common/enums';
+import {
+  EventType,
+  UrgencyLevel,
+  ReturnReason,
+  SourceCallbackStatus,
+  MergeStrategy,
+} from '../common/enums';
 
 export class CreateEventDto {
   @IsEnum(EventType)
@@ -55,6 +61,105 @@ export class CreateEventDto {
   @IsOptional()
   @IsUUID()
   reporterId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  autoMerge?: boolean;
+}
+
+export class MergeEventsDto {
+  @IsUUID()
+  targetEventId: string;
+
+  @IsArray()
+  @IsUUID(undefined, { each: true })
+  sourceEventIds: string[];
+
+  @IsOptional()
+  @IsEnum(MergeStrategy)
+  mergeStrategy?: MergeStrategy;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  remark?: string;
+
+  @IsOptional()
+  @IsUUID()
+  operatorId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  operatorName?: string;
+}
+
+export class CoordinateAssignDto {
+  @IsUUID()
+  leadDepartmentId: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID(undefined, { each: true })
+  collaborativeDepartmentIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  coordinationRemark?: string;
+
+  @IsOptional()
+  @IsUUID()
+  operatorId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  operatorName?: string;
+}
+
+export class UpdateSourceCallbackDto {
+  @IsEnum(SourceCallbackStatus)
+  callbackStatus: SourceCallbackStatus;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  callbackRemark?: string;
+
+  @IsOptional()
+  @IsUUID()
+  operatorId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  operatorName?: string;
+}
+
+export class EvaluateSourceDto {
+  @IsUUID()
+  sourceId: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  satisfaction: number;
+
+  @IsBoolean()
+  isApproved: boolean;
+
+  @IsOptional()
+  @IsString()
+  comment?: string;
+
+  @IsOptional()
+  @IsUUID()
+  evaluatorId?: string;
+
+  @IsOptional()
+  @IsString()
+  evaluatorName?: string;
 }
 
 export class VerifyEventDto {

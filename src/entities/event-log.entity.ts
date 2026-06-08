@@ -31,8 +31,9 @@ export class EventLog {
   @Column({
     type: 'varchar',
     length: 30,
+    nullable: true,
   })
-  toStatus: EventStatus;
+  toStatus: EventStatus | null;
 
   @Column({ type: 'text', nullable: true })
   remark: string;

@@ -5,6 +5,8 @@
 ## 原始需求
 
 > 街道治理需要网格事件派单服务，NestJS 接口处理居民诉求、网格员核实、部门派单、升级督办、办结反馈和回访评价。业务对象包括事件类型、位置、照片、紧急程度、责任部门、处置时限、退回原因、协同部门、办结材料和居民满意度。网格员上报占道经营、井盖破损、噪声扰民或积水隐患，指挥中心按权责派给城管、市政、物业或交警；部门处理后上传结果，居民或网格员确认。服务要区分地址不清、权责不明、部门退回、超时升级、重复事件和居民不认可办结。
+> 重复事件要合并但保留来源。多个居民报同一井盖破损时，接口合并处置任务，同时保存每个报事人的回访状态。 
+> 权责争议要进入协调。城管和物业互相退回时，服务记录退回理由，指挥中心可指定牵头部门和协同部门。
 
 ## 技术栈
 
@@ -131,6 +133,14 @@ npm run start:prod
 | PUT | /api/events/:id/reject | 居民不认可办结 |
 | PUT | /api/events/:id/escalate | 升级督办 |
 | PUT | /api/events/:id/duplicate | 标记为重复事件 |
+| POST | /api/events/merge | 手动合并多个事件（保留所有来源） |
+| PUT | /api/events/:id/coordinate-assign | 指挥中心协调派单（指定牵头+协同部门） |
+| GET | /api/events/:id/sources | 查询事件所有报事来源（含回访评价） |
+| GET | /api/events/sources/:sourceId | 查询单个来源详情（含评价） |
+| PUT | /api/events/sources/:sourceId/callback | 更新来源回访状态 |
+| POST | /api/events/sources/evaluate | 来源独立评价（每个报事人可单独评价） |
+| GET | /api/events/:id/return-records | 查询退回记录（含退回理由和轮次） |
+| GET | /api/events/:id/coordination-records | 查询协调记录（含牵头/协同部门） |
 
 ### 用户管理
 
@@ -169,12 +179,14 @@ npm run start:prod
 | ASSIGNED | 已派单 |
 | PROCESSING | 处理中 |
 | RETURNED | 已退回 |
+| IN_COORDINATION | 协调中（权责争议，等待指挥中心协调） |
 | ESCALATED | 已升级督办 |
 | COMPLETED | 待确认办结 |
 | CONFIRMED | 已办结（居民认可） |
 | REJECTED | 居民不认可 |
 | CLOSED | 已关闭 |
 | DUPLICATE | 重复事件 |
+| MERGED | 已合并（被合并到其他事件） |
 
 ## 事件类型与部门映射
 

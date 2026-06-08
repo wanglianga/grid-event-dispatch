@@ -7,6 +7,9 @@ import { User } from './entities/user.entity';
 import { Event } from './entities/event.entity';
 import { EventLog } from './entities/event-log.entity';
 import { Evaluation } from './entities/evaluation.entity';
+import { EventSource } from './entities/event-source.entity';
+import { ReturnRecord } from './entities/return-record.entity';
+import { CoordinationRecord } from './entities/coordination-record.entity';
 import { SeedService } from './services/seed.service';
 import { DepartmentService } from './services/department.service';
 import { UserService } from './services/user.service';
@@ -20,7 +23,16 @@ import { OverdueScheduler } from './scheduler/overdue.scheduler';
 @Module({
   imports: [
     TypeOrmModule.forRoot(getDbConfig()),
-    TypeOrmModule.forFeature([Department, User, Event, EventLog, Evaluation]),
+    TypeOrmModule.forFeature([
+      Department,
+      User,
+      Event,
+      EventLog,
+      Evaluation,
+      EventSource,
+      ReturnRecord,
+      CoordinationRecord,
+    ]),
     ScheduleModule.forRoot(),
   ],
   controllers: [

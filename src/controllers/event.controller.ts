@@ -23,8 +23,15 @@ import {
   MarkDuplicateDto,
   EscalateEventDto,
   QueryEventDto,
+  MergeEventsDto,
+  CoordinateAssignDto,
+  UpdateSourceCallbackDto,
+  EvaluateSourceDto,
 } from '../dto';
 import { Event } from '../entities/event.entity';
+import { EventSource } from '../entities/event-source.entity';
+import { ReturnRecord } from '../entities/return-record.entity';
+import { CoordinationRecord } from '../entities/coordination-record.entity';
 import { EventType } from '../common/enums';
 
 @Controller('events')
@@ -48,6 +55,31 @@ export class EventController {
     @Query('address') address: string,
   ): Promise<{ isDuplicate: boolean; duplicateEvents: Event[] }> {
     return this.eventService.checkDuplicate(eventType, address);
+  }
+
+  @Post('merge')
+  @HttpCode(HttpStatus.OK)
+  mergeEvents(@Body() dto: MergeEventsDto): Promise<Event> {
+    return this.eventService.mergeEvents(dto);
+  }
+
+  @Post('sources/evaluate')
+  @HttpCode(HttpStatus.CREATED)
+  evaluateSource(@Body() dto: EvaluateSourceDto): Promise<EventSource> {
+    return this.eventService.evaluateSource(dto);
+  }
+
+  @Get('sources/:sourceId')
+  findOneSource(@Param('sourceId') sourceId: string): Promise<EventSource> {
+    return this.eventService.findOneSource(sourceId);
+  }
+
+  @Put('sources/:sourceId/callback')
+  updateSourceCallback(
+    @Param('sourceId') sourceId: string,
+    @Body() dto: UpdateSourceCallbackDto,
+  ): Promise<EventSource> {
+    return this.eventService.updateSourceCallback(sourceId, dto);
   }
 
   @Get(':id')
@@ -134,5 +166,28 @@ export class EventController {
     @Body() dto: MarkDuplicateDto,
   ): Promise<Event> {
     return this.eventService.markDuplicate(id, dto);
+  }
+
+  @Put(':id/coordinate-assign')
+  coordinateAssign(
+    @Param('id') id: string,
+    @Body() dto: CoordinateAssignDto,
+  ): Promise<Event> {
+    return this.eventService.coordinateAssign(id, dto);
+  }
+
+  @Get(':id/sources')
+  findEventSources(@Param('id') eventId: string): Promise<EventSource[]> {
+    return this.eventService.findEventSources(eventId);
+  }
+
+  @Get(':id/return-records')
+  findReturnRecords(@Param('id') eventId: string): Promise<ReturnRecord[]> {
+    return this.eventService.findReturnRecords(eventId);
+  }
+
+  @Get(':id/coordination-records')
+  findCoordinationRecords(@Param('id') eventId: string): Promise<CoordinationRecord[]> {
+    return this.eventService.findCoordinationRecords(eventId);
   }
 }

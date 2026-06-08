@@ -13,9 +13,14 @@ import {
   EventType,
   UrgencyLevel,
   ReturnReason,
+  CoordinationStatus,
+  MergeStrategy,
 } from '../common/enums';
 import { EventLog } from './event-log.entity';
 import { Evaluation } from './evaluation.entity';
+import { EventSource } from './event-source.entity';
+import { ReturnRecord } from './return-record.entity';
+import { CoordinationRecord } from './coordination-record.entity';
 
 @Entity('events')
 export class Event {
@@ -122,6 +127,44 @@ export class Event {
   @ManyToOne(() => Evaluation, { nullable: true })
   @JoinColumn()
   evaluation: Evaluation;
+
+  @Column({
+    type: 'varchar',
+    length: 30,
+    default: CoordinationStatus.NONE,
+  })
+  coordinationStatus: CoordinationStatus;
+
+  @Column({ type: 'uuid', nullable: true })
+  leadDepartmentId: string | null;
+
+  @Column({ length: 100, nullable: true })
+  leadDepartmentName: string;
+
+  @Column({ type: 'simple-array', nullable: true })
+  coordinationCollaborativeIds: string[];
+
+  @Column({ type: 'simple-array', nullable: true })
+  coordinationCollaborativeNames: string[];
+
+  @Column({ type: 'text', nullable: true })
+  coordinationRemark: string;
+
+  @Column({ type: 'int', default: 0 })
+  returnCount: number;
+
+  @Column({
+    type: 'varchar',
+    length: 30,
+    nullable: true,
+  })
+  mergeStrategy: MergeStrategy | null;
+
+  sources: EventSource[];
+
+  returnRecords: ReturnRecord[];
+
+  coordinationRecords: CoordinationRecord[];
 
   @CreateDateColumn()
   createdAt: Date;
